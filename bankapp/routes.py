@@ -4,6 +4,7 @@ from flask_sqlalchemy import SQLAlchemy #sqlalchemy
 from flask_bcrypt import Bcrypt
 from bankapp import app, db, bcrypt
 from bankapp.customers import customers
+from decimal import Decimal
 
 @app.route("/")
 def home():
@@ -42,7 +43,9 @@ def login():
 			#return redirect(url_for("login"))
 			#TODO REMOVE next four lines
 			adding_password = bcrypt.generate_password_hash(user_password).decode("utf-8")
-			usr = customers(user_name, adding_password)
+			#adding_amount = 15.23
+			#adding_amount_rounded = round(adding_amount, 2)
+			usr = customers(user_name, adding_password)#, adding_amount_rounded)
 			db.session.add(usr)
 			db.session.commit()
 
