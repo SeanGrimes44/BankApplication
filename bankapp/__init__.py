@@ -19,6 +19,8 @@ app.permenant_session_lifetime = timedelta(minutes=2)
 db = SQLAlchemy(app)
 # encrypting
 bcrypt = Bcrypt(app)
-
+from bankapp.customers import customers
+db.drop_all()
+db.create_all()
 
 from bankapp import routes
