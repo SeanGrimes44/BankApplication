@@ -2,6 +2,9 @@
 {% block title %}View All Users{% endblock %}
 {% block content%}
 	{% for item in values %}
-		<p>Name: {{item.name}}, password: {{item.password}}</p>
+		<p>Name: {{item.name}}, password: {{item.password}}, amount: {{item.amount}}</p>
+		{% for ac in item.accounts %}
+			<p>Amount: ${{ac.amount}}</p>
+		{% endfor %}
 	{% endfor %}
 {% endblock %}

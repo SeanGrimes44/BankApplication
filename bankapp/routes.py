@@ -3,7 +3,7 @@ from datetime import timedelta
 from flask_sqlalchemy import SQLAlchemy #sqlalchemy
 from flask_bcrypt import Bcrypt
 from bankapp import app, db, bcrypt
-from bankapp.customers import customers
+from bankapp.customers import customers, Account
 from decimal import Decimal
 
 @app.route("/")
@@ -13,7 +13,17 @@ def home():
 # Test method
 @app.route("/view")
 def view():
-	return render_template("view.html", values=customers.query.all())
+	return render_template("view.html", values=customers.query.all())#, acs=Account.query.all())
+
+@app.route("/transaction", methods=["POST", "GET"])
+def transaction():
+	if ("user" in session):
+		# Make the transaction
+		user = session["user"]
+		
+	else:
+		flash("You are not logged in")
+		return redirect(url_for("login"))
 
 
 @app.route("/login", methods=["POST", "GET"])
@@ -43,12 +53,23 @@ def login():
 			#return redirect(url_for("login"))
 			#TODO REMOVE next four lines
 			adding_password = bcrypt.generate_password_hash(user_password).decode("utf-8")
-			#adding_amount = 15.23
-			#adding_amount_rounded = round(adding_amount, 2)
-			usr = customers(user_name, adding_password)#, adding_amount_rounded)
+			adding_amount = 15.23
+			adding_amount_rounded = round(adding_amount, 2)
+			minus = 1.23
+			usr = customers(user_name, adding_password, adding_amount_rounded)
+			usr.sub_amount(minus)
+
+
 			db.session.add(usr)
 			db.session.commit()
 
+			#TEST create accounts
+			savings = Account(amount=13.20, owner=usr, account_type="Savings")
+
+			checking = Account(amount=14.20, owner=usr, account_type="Checking")
+			db.session.add(savings)
+			db.session.add(checking)
+			db.session.commit()
 
 		# pass to user method using data from session
 		flash("Login successful!")
