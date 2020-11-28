@@ -15,12 +15,69 @@ def home():
 def view():
 	return render_template("view.html", values=customers.query.all())#, acs=Account.query.all())
 
-@app.route("/transaction", methods=["POST", "GET"])
-def transaction():
+@app.route("/transfer", methods=["POST", "GET"])
+def transfer():
 	if ("user" in session):
 		# Make the transaction
 		user = session["user"]
-		
+		user_account = customers.query.filter_by(name="frank")
+		#if (user_account):
+		#	flash("User account is found!")
+
+		#POST stuff here
+		if request.method == "POST":
+			sender_id = request.form["sn"]
+			receiver_id = request.form["rc"]
+			send_amount = request.form["am"]
+
+
+			# Checking if sending account is found
+			try:
+				converted_sender_id = int(sender_id)
+				
+			except:
+				flash("Please enter a valid sending account number")
+				return redirect(url_for("transfer"))
+
+
+			#TODO only filter by user's accounts
+			send_account = Account.query.filter_by(bank_id=converted_sender_id).first()
+			if (send_account):
+				flash("Account found!")
+			else:
+				flash("Input valid, but account not found.")
+
+
+		# Checking if recieving account is found
+			try:
+				converted_receiver_id = int(receiver_id)
+				
+			except:
+				flash("Please enter a valid receiving account number")
+				return redirect(url_for("transfer"))
+
+
+			rec_account = Account.query.filter_by(bank_id=converted_receiver_id).first()
+			if (rec_account):
+#				minus_string = "12.10"
+#				minus = Decimal(minus_string)
+#				rec_account.sub_amount(minus)
+#				db.session.commit()
+				flash("Receiving Account found!")
+			else:
+				flash("Input valid, but receiving account not found.")
+
+			#Check if amount to send is valid.
+			#TODO Check if non-negative.
+			send_amount_decimal = Decimal(send_amount)
+			if (send_amount_decimal < send_account.amount):
+				rec_account.add_amount(send_amount_decimal)
+				send_account.sub_amount(send_amount_decimal)
+				db.session.commit()
+
+
+
+		return render_template("transfer.html")
 	else:
 		flash("You are not logged in")
 		return redirect(url_for("login"))
@@ -64,9 +121,9 @@ def login():
 			db.session.commit()
 
 			#TEST create accounts
-			savings = Account(amount=13.20, owner=usr, account_type="Savings")
+			savings = Account(bank_id=123, amount=13.20, owner=usr, account_type="Savings")
 
-			checking = Account(amount=14.20, owner=usr, account_type="Checking")
+			checking = Account(bank_id=222, amount=14.20, owner=usr, account_type="Checking")
 			db.session.add(savings)
 			db.session.add(checking)
 			db.session.commit()

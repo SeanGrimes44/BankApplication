@@ -27,13 +27,18 @@ class customers(db.Model):
 
 class Account(db.Model):
 	_id = db.Column("id", db.Integer, primary_key=True)
+	bank_id = db.Column("number", db.Integer, unique=True)
 	amount = db.Column("amount", db.Numeric(scale=2))
 	account_type = db.Column("type", db.String(10))
 	owner_id = db.Column(db.Integer, db.ForeignKey("customers.id"), nullable=False)
 #	def __init__(self, amount, customer_id):
 #		self.amount = amount
 #		self.customer_id = customer_id
-
+	def sub_amount(self, minus_amount):
+		self.amount -= minus_amount
+		
+	def add_amount(self, add_amount):
+		self.amount += add_amount
 #class Transaction(db.Model):
 #	_id = db.Column("id", db.Integer, primary_key=True)
 
