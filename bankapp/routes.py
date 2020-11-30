@@ -1,9 +1,9 @@
 from flask import Flask, redirect, url_for, render_template, request, session, flash
-from datetime import timedelta
+from datetime import timedelta, datetime
 from flask_sqlalchemy import SQLAlchemy #sqlalchemy
 from flask_bcrypt import Bcrypt
 from bankapp import app, db, bcrypt
-from bankapp.customers import customers, Account
+from bankapp.customers import customers, Account, Transaction
 from decimal import Decimal
 
 @app.route("/")
@@ -13,7 +13,14 @@ def home():
 # Test method
 @app.route("/view")
 def view():
-	return render_template("view.html", values=customers.query.all())#, acs=Account.query.all())
+	if ("user" in session):
+		user = session["user"]
+
+		test_user = Account.query.filter_by(owner="user")
+		#test_user.order_by(bank_id.desc())
+
+		return render_template("view.html", tests=test_user, values=customers.query.filter_by(name=user))
+	return render_template("view.html", values=customers.query.all())
 
 @app.route("/transfer", methods=["POST", "GET"])
 def transfer():
@@ -72,7 +79,12 @@ def transfer():
 			send_amount_decimal = Decimal(send_amount)
 			if (send_amount_decimal < send_account.amount):
 				rec_account.add_amount(send_amount_decimal)
+				rec_transaction = Transaction(merchant_id=send_account.bank_id, amount=send_amount_decimal, receiver=rec_account)#, date=datetime.datetime.now())
+
 				send_account.sub_amount(send_amount_decimal)
+				send_transaction = Transaction(merchant_id=rec_account.bank_id, amount=-send_amount_decimal, receiver=send_account)#, date=datetime.datetime.now())
+				db.session.add(rec_transaction)
+				db.session.add(send_transaction)
 				db.session.commit()
 
 
@@ -121,9 +133,9 @@ def login():
 			db.session.commit()
 
 			#TEST create accounts
-			savings = Account(bank_id=123, amount=13.20, owner=usr, account_type="Savings")
+			savings = Account(bank_id=987, amount=13.20, owner=usr, account_type="Savings")
 
-			checking = Account(bank_id=222, amount=14.20, owner=usr, account_type="Checking")
+			checking = Account(bank_id=999, amount=14.20, owner=usr, account_type="Checking")
 			db.session.add(savings)
 			db.session.add(checking)
 			db.session.commit()

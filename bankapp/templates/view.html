@@ -5,6 +5,12 @@
 		<p>Name: {{item.name}}, password: {{item.password}}, amount: {{item.amount}}</p>
 		{% for ac in item.accounts %}
 			<p>ID: {{ac.bank_id}} Type: {{ac.account_type}} Amount: ${{ac.amount}}</p>
+			{% for tra in ac.transactions %}
+				<p>Transaction id: {{tra._id}} Merchant id: {{tra.merchant_id}} Date Amount ${{tra.amount}}</p>
+			{% endfor %}
+		{% endfor %}
+		{% for ts in tests %}
+			<p>ID: {{ts.bank_id}} Type: {{ts.account_type}} Amount: ${{ts.amount}}</p>
 		{% endfor %}
 	{% endfor %}
 {% endblock %}
