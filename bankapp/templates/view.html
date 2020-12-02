@@ -1,16 +1,24 @@
 {% extends "base.html" %}
-{% block title %}View All Users{% endblock %}
+{% block title %}View Account{% endblock %}
 {% block content%}
+
 	{% for item in values %}
 		<p>Name: {{item.name}}, password: {{item.password}}, amount: {{item.amount}}</p>
 		{% for ac in item.accounts %}
+		    <div class="card" style="width: 18rem;">
+			<div class="card-header">
+			  Account ID: {{ac.bank_id}}
+			</div>
+			<ul class="list-group list-group-flush">
+			  <li class="list-group-item">Account ID: {{ac.bank_id}}</li>
+			  <li class="list-group-item">Type: {{ac.account_type}}</li>
+			  <li class="list-group-item">Amount: ${{ac.amount}}</li>
+			 </ul>
+			</div>
 			<p>ID: {{ac.bank_id}} Type: {{ac.account_type}} Amount: ${{ac.amount}}</p>
 			{% for tra in ac.transactions %}
 				<p>Transaction id: {{tra._id}} Merchant id: {{tra.merchant_id}} Date Amount ${{tra.amount}}</p>
 			{% endfor %}
-		{% endfor %}
-		{% for ts in tests %}
-			<p>ID: {{ts.bank_id}} Type: {{ts.account_type}} Amount: ${{ts.amount}}</p>
 		{% endfor %}
 	{% endfor %}
 {% endblock %}

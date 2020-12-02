@@ -10,17 +10,23 @@ from decimal import Decimal
 def home():
 	return render_template("index.html", content="Testing")
 
-# Test method
+
 @app.route("/view")
 def view():
 	if ("user" in session):
 		user = session["user"]
 
-		test_user = Account.query.filter_by(owner="user")
-		#test_user.order_by(bank_id.desc())
+		return render_template("view.html", values=customers.query.filter_by(name=user))
+	return render_template("login.html")
 
-		return render_template("view.html", tests=test_user, values=customers.query.filter_by(name=user))
-	return render_template("view.html", values=customers.query.all())
+@app.route("/transactions")
+def view_transactions():
+	if ("user" in session):
+		user = session["user"]
+
+		return render_template("transactions.html", values=customers.query.filter_by(name=user))
+	return render_template("login.html")
+
 
 @app.route("/transfer", methods=["POST", "GET"])
 def transfer():
