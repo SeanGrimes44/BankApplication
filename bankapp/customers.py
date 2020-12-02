@@ -47,7 +47,7 @@ class Transaction(db.Model):
 	merchant_id = db.Column("merchant", db.Integer)
 	amount = db.Column("transfer_amount", db.Numeric(scale=2))
 	#date
-	date_sent = db.Column(db.DateTime, default=datetime.utcnow())
+	date_sent = db.Column(db.DateTime, default=datetime.utcnow)
 	receiver_id = db.Column(db.Integer, db.ForeignKey("account.id"), nullable=False)
 
 

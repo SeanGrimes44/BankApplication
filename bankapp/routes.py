@@ -15,17 +15,25 @@ def home():
 def view():
 	if ("user" in session):
 		user = session["user"]
+		customer_to_view = customers.query.filter_by(name=user).first()
+		accounts_to_view = Account.query.filter_by(owner=customer_to_view)
+		sorted_accounts = accounts_to_view.order_by(Account.bank_id.asc())
+		today = datetime.now()
 
-		return render_template("view.html", values=customers.query.filter_by(name=user))
-	return render_template("login.html")
+		return render_template("view.html", acs=sorted_accounts, day="today")
+	return redirect(url_for("login"))
+
+
 
 @app.route("/transactions")
 def view_transactions():
 	if ("user" in session):
 		user = session["user"]
+		customer_to_view = customers.query.filter_by(name=user).first()
+		accounts_to_view = customer_to_view.accounts
 
-		return render_template("transactions.html", values=customers.query.filter_by(name=user))
-	return render_template("login.html")
+		return render_template("transactions.html", values=accounts_to_view)
+	return redirect(url_for("login"))
 
 
 @app.route("/transfer", methods=["POST", "GET"])
@@ -85,10 +93,10 @@ def transfer():
 			send_amount_decimal = Decimal(send_amount)
 			if (send_amount_decimal < send_account.amount):
 				rec_account.add_amount(send_amount_decimal)
-				rec_transaction = Transaction(merchant_id=send_account.bank_id, amount=send_amount_decimal, receiver=rec_account)#, date=datetime.datetime.now())
+				rec_transaction = Transaction(merchant_id=send_account.bank_id, amount=send_amount_decimal, receiver=rec_account, date_sent=datetime.utcnow())
 
 				send_account.sub_amount(send_amount_decimal)
-				send_transaction = Transaction(merchant_id=rec_account.bank_id, amount=-send_amount_decimal, receiver=send_account)#, date=datetime.datetime.now())
+				send_transaction = Transaction(merchant_id=rec_account.bank_id, amount=-send_amount_decimal, receiver=send_account, date_sent=datetime.utcnow())
 				db.session.add(rec_transaction)
 				db.session.add(send_transaction)
 				db.session.commit()
