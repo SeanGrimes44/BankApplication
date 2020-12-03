@@ -11,29 +11,71 @@ def home():
 	return render_template("index.html", content="Testing")
 
 
-@app.route("/view")
+@app.route("/view", methods=["POST", "GET"])
 def view():
 	if ("user" in session):
 		user = session["user"]
-		customer_to_view = customers.query.filter_by(name=user).first()
-		accounts_to_view = Account.query.filter_by(owner=customer_to_view)
-		sorted_accounts = accounts_to_view.order_by(Account.bank_id.asc())
-		today = datetime.now()
+
+		# Go to transaction page
+		if request.method == "POST":
+			account_to_get = request.form["account_select"]#.get("account_select")
+			session["account"]=account_to_get
+			return redirect(url_for("view_transactions"))
+		else:
+
+
+
+			customer_to_view = customers.query.filter_by(name=user).first()
+			accounts_to_view = Account.query.filter_by(owner=customer_to_view)
+			sorted_accounts = accounts_to_view.order_by(Account.bank_id.asc())
+			today = datetime.now()
+		#customer_to_view.accounts = customer_to_view.accounts.order_by(Account.bank_id.asc())
 
 		return render_template("view.html", acs=sorted_accounts, day="today")
 	return redirect(url_for("login"))
 
-
-
-@app.route("/transactions")
+@app.route("/transactions", methods=["POST", "GET"])
 def view_transactions():
-	if ("user" in session):
-		user = session["user"]
-		customer_to_view = customers.query.filter_by(name=user).first()
-		accounts_to_view = customer_to_view.accounts
+	if ("account" in session):
+		account = session["account"]
+		account_number = int(account)
+		account_to_view = Account.query.filter_by(bank_id=account_number).first()
+		transactions_to_view = Transaction.query.filter_by(receiver=account_to_view)
+		sorted_transactions = transactions_to_view.order_by(Transaction.amount.desc())
 
-		return render_template("transactions.html", values=accounts_to_view)
-	return redirect(url_for("login"))
+		#Sorting
+		if request.method == "POST":
+			sorting_method = request.form["sort_select"]
+			if (sorting_method == "1"):
+				#Amount (Ascending)
+				#account_to_view = Account.query.filter_by(bank_id=account_number).first()
+				#transactions_to_view = Transaction.query.filter_by(receiver=account_to_view)
+				sorted_transactions = transactions_to_view.order_by(Transaction.amount.asc())
+				return render_template("transactions.html", acc=account_to_view, tra=sorted_transactions)
+				#return url_for("logout")
+
+			elif (sorting_method == "2"):
+				#Amount (Descending)
+				#account_to_view = Account.query.filter_by(bank_id=account_number).first()
+				#transactions_to_view = Transaction.query.filter_by(receiver=account_to_view)
+				sorted_transactions = transactions_to_view.order_by(Transaction.amount.desc())
+				return render_template("transactions.html", acc=account_to_view, tra=sorted_transactions)
+
+			elif (sorting_method == "3"):
+				#Date (Ascending)
+				sorted_transactions = transactions_to_view.order_by(Transaction.date_sent.asc())
+				return render_template("transactions.html", acc=account_to_view, tra=sorted_transactions)
+
+			elif (sorting_method == "4"):
+				#Date (Descending)
+				sorted_transactions = transactions_to_view.order_by(Transaction.date_sent.desc())
+				return render_template("transactions.html", acc=account_to_view, tra=sorted_transactions)
+
+
+		return render_template("transactions.html", acc=account_to_view, tra=sorted_transactions)
+
+	flash("Must select an account to view transactions from.")
+	return redirect(url_for("view"))
 
 
 @app.route("/transfer", methods=["POST", "GET"])
@@ -192,4 +234,5 @@ def logout():
 	flash("You are logged out")
 	session.pop("user", None)
 	session.pop("password", None)
+	session.pop("account", None)
 	return redirect(url_for("login"))

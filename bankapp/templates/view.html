@@ -2,7 +2,7 @@
 {% block title %}View Account{% endblock %}
 {% block content%}
 
-	<!--{% for item in values %}-->
+	<!--{% for item in values %}NOT USED-->
 		<p>Name: {{item.name}}, password: {{item.password}}, amount: {{item.amount}} day: {{day}}</p>
 		{% for ac in item.accounts %}
 		    <div class="card" style="width: 18rem;">
@@ -20,7 +20,26 @@
 				<p>Transaction id: {{tra._id}} Merchant id: {{tra.merchant_id}} Date: {{tra.date_sent.strftime("%Y")}} Amount ${{tra.amount}}</p>
 			{% endfor %}
 		{% endfor %}
-	<!--{% endfor %}-->
+	<!--{% endfor %}END OF NOT USED-->
+
+	<form action = "#" method="post">
+	  <div class="form-row align-items-center">
+	    <div class="col-auto my-1">
+	      <label class="mr-sm-2 sr-only" for="inlineFormCustomSelect">Preference</label>
+	      <select class="custom-select mr-sm-2" id="inlineFormCustomSelect" name="account_select">
+	        <option selected>Choose...</option>
+	      	{% for ac in acs %}
+	        <option value={{ac.bank_id}}>{{ac.bank_id}}</option>
+	        {% endfor %}
+	      </select>
+	    </div>
+	    <div class="col-auto my-1">
+	      <button type="submit" class="btn btn-primary">Submit</button>
+	    </div>
+	  </div>
+	</form>
+
+
 
 	{% for ac in acs %}
 		    <div class="card" style="width: 18rem;">
@@ -37,6 +56,7 @@
 			{% for tra in ac.transactions %}
 				<p>Transaction id: {{tra._id}} Merchant id: {{tra.merchant_id}} Date {{tra.date_sent}} Amount ${{tra.amount}}</p>
 			{% endfor %}
+
 		{% endfor %}
 
 {% endblock %}
