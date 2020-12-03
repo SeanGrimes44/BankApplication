@@ -7,7 +7,7 @@ from flask_bcrypt import Bcrypt
 app = Flask(__name__)
 # Secret key needed for session
 # TODO change key later
-app.secret_key = "howdy"
+app.secret_key = "nexF57eQSpRjHNIc91VHTHGVJxvdTTIM"
 #Config database, users is database
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.sqlite3'
 #Optional, gets rid of some warnings
@@ -19,8 +19,8 @@ app.permenant_session_lifetime = timedelta(minutes=2)
 db = SQLAlchemy(app)
 # encrypting
 bcrypt = Bcrypt(app)
-from bankapp.customers import customers
-db.drop_all()
+from bankapp.modules import Customer
+#db.drop_all()
 db.create_all()
 
 from bankapp import routes

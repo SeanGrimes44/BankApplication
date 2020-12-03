@@ -2,61 +2,46 @@
 {% block title %}View Account{% endblock %}
 {% block content%}
 
-	<!--{% for item in values %}NOT USED-->
-		<p>Name: {{item.name}}, password: {{item.password}}, amount: {{item.amount}} day: {{day}}</p>
-		{% for ac in item.accounts %}
-		    <div class="card" style="width: 18rem;">
-			<div class="card-header">
-			  Account ID: {{ac.bank_id}}
-			</div>
-			<ul class="list-group list-group-flush">
-			  <li class="list-group-item">Account ID: {{ac.bank_id}}</li>
-			  <li class="list-group-item">Type: {{ac.account_type}}</li>
-			  <li class="list-group-item">Amount: ${{ac.amount}}</li>
-			 </ul>
-			</div>
-			<p>ID: {{ac.bank_id}} Type: {{ac.account_type}} day: {{day}}</p>
-			{% for tra in ac.transactions %}
-				<p>Transaction id: {{tra._id}} Merchant id: {{tra.merchant_id}} Date: {{tra.date_sent.strftime("%Y")}} Amount ${{tra.amount}}</p>
-			{% endfor %}
-		{% endfor %}
-	<!--{% endfor %}END OF NOT USED-->
+	{% with messages = get_flashed_messages() %}
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-primary alert-dismissible fade show" role="alert">
+                    <span>{{ message }}</span>
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
 
 	<form action = "#" method="post">
-	  <div class="form-row align-items-center">
-	    <div class="col-auto my-1">
-	      <label class="mr-sm-2 sr-only" for="inlineFormCustomSelect">Preference</label>
-	      <select class="custom-select mr-sm-2" id="inlineFormCustomSelect" name="account_select">
-	        <option selected>Choose...</option>
-	      	{% for ac in acs %}
-	        <option value={{ac.bank_id}}>{{ac.bank_id}}</option>
-	        {% endfor %}
-	      </select>
-	    </div>
-	    <div class="col-auto my-1">
-	      <button type="submit" class="btn btn-primary">Submit</button>
-	    </div>
-	  </div>
+	  	<div class="form-row align-items-center">
+	    	<div class="col-auto my-1">
+	      		<label class="mr-sm-2 sr-only" for="inlineFormCustomSelect">Preference</label>
+	      		<select class="custom-select mr-sm-2" id="inlineFormCustomSelect" name="account_select">
+	        		<option selected>Select an account to view transactions...</option>
+	      			{% for ac in acs %}
+	        			<option value={{ac.bank_id}}>{{ac.bank_id}}</option>
+	        		{% endfor %}
+	      		</select>
+	    	</div>
+	    	<div class="col-auto my-1">
+	      		<button type="submit" class="btn btn-primary">View transactions</button>
+	    	</div>
+	  	</div>
 	</form>
 
-
-
 	{% for ac in acs %}
-		    <div class="card" style="width: 18rem;">
+		<div class="card" style="width: 18rem;">
 			<div class="card-header">
-			  Account ID: {{ac.bank_id}}
+				Account ID: {{ac.bank_id}}
 			</div>
 			<ul class="list-group list-group-flush">
-			  <li class="list-group-item">Account ID: {{ac.bank_id}}</li>
-			  <li class="list-group-item">Type: {{ac.account_type}}</li>
-			  <li class="list-group-item">Amount: ${{ac.amount}}</li>
-			 </ul>
-			</div>
-			<p>ID: {{ac.bank_id}} Type: {{ac.account_type}} Amount: ${{ac.amount}}</p>
-			{% for tra in ac.transactions %}
-				<p>Transaction id: {{tra._id}} Merchant id: {{tra.merchant_id}} Date {{tra.date_sent}} Amount ${{tra.amount}}</p>
-			{% endfor %}
-
-		{% endfor %}
+			  	<li class="list-group-item">Type: {{ac.account_type}}</li>
+			  	<li class="list-group-item">Amount: ${{ac.amount}}</li>
+			</ul>
+		</div>
+	{% endfor %}
 
 {% endblock %}
