@@ -91,7 +91,7 @@ def transfer():
 
 			# Check for the sending account.
 			if not send_account:
-				flash("Please enter a valid account number. 1")
+				flash("Please enter a valid account number.")
 				return redirect(url_for("transfer"))
 
 		# Checking if recieving account is found
@@ -105,7 +105,7 @@ def transfer():
 			# Check if receiving account is found.
 			rec_account = Account.query.filter_by(bank_id=converted_receiver_id).first()
 			if not rec_account:
-				flash("Please enter a valid account number. 4")
+				flash("Please enter a valid account number.")
 				return redirect(url_for("transfer"))
 
 			#Check if amount to send is valid.
@@ -126,12 +126,12 @@ def transfer():
 
 			# Invalid amount of money.
 			else:
-				flash("Invalid amount of money. Please ")
+				flash("Invalid amount of money.")
 				return redirect(url_for("transfer"))
 
 		return render_template("transfer.html")
 	else:
-		flash("You are not logged in")
+		flash("You are not logged in.")
 		return redirect(url_for("login"))
 
 @app.route("/login", methods=["POST", "GET"])
